@@ -712,6 +712,11 @@ h3 {
 .explore-readout.show {
   opacity: 1;
   transform: none;
+  pointer-events: auto;
+}
+
+.mobile-readout {
+  display: none;
 }
 
 .explore-readout .k {
@@ -1261,6 +1266,44 @@ h3 {
   .statline {
     flex-wrap: wrap;
     gap: 26px;
+  }
+
+  .desktop-readout {
+    display: none;
+  }
+
+  .mobile-readout {
+    display: block;
+    position: static;
+    transform: none;
+    width: 100%;
+    border-radius: 0 0 3px 3px;
+    border-top: none;
+    padding: 16px 18px;
+    font-size: 0.88rem;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.4s, max-height 0.4s;
+    pointer-events: none;
+  }
+
+  .mobile-readout.show {
+    opacity: 1;
+    max-height: 400px;
+    pointer-events: auto;
+  }
+
+  .mobile-readout h4 {
+    font-size: 1.2rem;
+    margin: 4px 0 8px;
+  }
+
+  .mobile-readout p {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--ink-dim);
+    margin: 0;
   }
 
   .explore-viewport {

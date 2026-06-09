@@ -94,7 +94,7 @@ function Nav() {
   return (
     <>
       <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
-        <a href="#top" className="brand" onClick={() => setOpen(false)}>Mike&nbsp;Morcos</a>
+        <a href="#top" className="brand" onClick={() => setOpen(false)}>Mike&nbsp;Morcous</a>
         <div className="nav-links">
           {links.map(([label, href]) => <a key={href} href={href}>{label}</a>)}
           <a href="#contact" className="nav-cta">Invite to Speak</a>
@@ -287,12 +287,12 @@ function About() {
       <div className="wrap">
         <div className="split">
           <figure className="about-figure" data-reveal data-parallax="0.04">
-            <img src={img('mike-mic.png')} alt="Mike Morcos speaking with the Shroud behind him" />
+            <img src={img('mike-mic.png')} alt="Mike Morcous speaking with the Shroud behind him" />
           </figure>
           <div>
             <div className="eyebrow" data-reveal>About Mike</div>
             <h2 className="display about-title" data-reveal>A patient guide to history&apos;s most studied cloth</h2>
-            <p data-reveal>Mike Morcos is a volunteer public speaker devoted to sharing the story of the Shroud. His presentations weave together centuries of history, the science of how the image has been examined and debated, and the questions of faith it continues to raise.</p>
+            <p data-reveal>Mike Morcous is a volunteer public speaker devoted to sharing the story of the Shroud. His presentations weave together centuries of history, the science of how the image has been examined and debated, and the questions of faith it continues to raise.</p>
             <p data-reveal>His talks are educational and accessible. By bringing a life-size replica into the room, he lets audiences appreciate the Shroud&apos;s detail in person, and leaves space for curiosity, discussion, and reflection.</p>
             <div className="statline" data-reveal>
               <div className="stat"><div className="n">10+</div><div className="l">Years studying<br />the Shroud</div></div>
@@ -390,7 +390,6 @@ const hotspots = [
   ['28', '50', '4.0', 'Wrist Wound',     'Nail wound at the wrist, not the palm',     'The nail wound appears in the wrist at the "Space of Destot," not the palm as in traditional iconography. Surgeon Dr. Pierre Barbet showed that nails through the palm tear out under body weight; only the carpal bones of the wrist can bear it. Piercing the median nerve here causes the thumb to involuntarily fold inward — which is why no thumbs are visible on the image.'],
   ['30', '57', '4.0', 'Arm Blood Stains', 'Rivulets running from the wrist wounds down both forearms. ','Two flow angles suggest the arms shifted between positions during crucifixion.'],
   ['35', '55', '3.8', 'Side Wound',      'The lance wound between the ribs',          'A large oval blood stain is visible on the right side of the chest between the 5th and 6th ribs. The Gospel of John (19:34) records that "blood and water" flowed from this wound. Medical researchers associate the separation of fluids with post-mortem serum separation, indicating the lance was thrust after death. The stain measures approximately 4.4 × 1.1 cm.'],
- 
   ['43', '40', '4.2', 'Facial Wounds',   'Bruising, swelling, and blows to the face', 'The face shows a swollen right cheek, nasal deviation consistent with a severe blow or fracture, and multiple abrasions. These match the Gospel accounts of guards striking Jesus during his trial'],
   ['47', '45', '4.2', 'Crown of Thorns', 'A helmet of thorns, not a simple ring crown','Unlike the ring-crown of traditional artwork, puncture wounds cover the entire scalp — consistent with a cap or helmet of thorns. Researchers count at least 30 puncture sites. A rivulet of blood on the forehead forms a reversed "3" shape, visible clearly in photographic negative. Botanist Alan Whanger identified patterns consistent with Ziziphus spina-christi, a thorny shrub native to the Jerusalem region.'],
   // Dorsal (back) image — head at center-right (~x=53%), feet far right (~x=90%)
@@ -542,36 +541,44 @@ function Explorer() {
           <p className="muted" data-reveal>Drag along the full length of the linen. Scroll or use the controls to zoom. Tap a marker to learn what it reveals.</p>
         </div>
 
-        <div className="explore-viewport" ref={vpRef} data-reveal onPointerDown={startDrag}>
-          <div className="explore-canvas" ref={cvRef}>
-            <div className="explore-cloth full-length landscape" ref={clothRef} style={{ backgroundImage: `url(${img('shroud-full-landscape.jpg')})` }}>
-              {hotspots.map((h, i) => (
-                <button
-                  key={h[4]}
-                  className={`hotspot ${active === i ? 'active' : ''}`}
-                  style={{ left: `${h[0]}%`, top: `${h[1]}%` }}
-                  aria-label={h[4]}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    chooseHotspot(i);
-                  }}
-                />
-              ))}
+        <div className="explore-wrap">
+          <div className="explore-viewport" ref={vpRef} data-reveal onPointerDown={startDrag}>
+            <div className="explore-canvas" ref={cvRef}>
+              <div className="explore-cloth full-length landscape" ref={clothRef} style={{ backgroundImage: `url(${img('shroud-full-landscape.jpg')})` }}>
+                {hotspots.map((h, i) => (
+                  <button
+                    key={h[4]}
+                    className={`hotspot ${active === i ? 'active' : ''}`}
+                    style={{ left: `${h[0]}%`, top: `${h[1]}%` }}
+                    aria-label={h[4]}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      chooseHotspot(i);
+                    }}
+                  />
+                ))}
+              </div>
             </div>
+
+            <div className={`explore-readout desktop-readout ${readout ? 'show' : ''}`}>
+              <div className="k">{readout?.k || 'Tap a marker'}</div>
+              <h4>{readout?.title || 'Nine wounds to examine'}</h4>
+              <p>{readout?.desc || 'Each marker zooms into a specific wound or mark on the cloth and explains what it is, what caused it, and why researchers consider it significant.'}</p>
+            </div>
+
+            <div className="explore-controls">
+              <button className="zbtn" onClick={() => zoomBy(0.8)} aria-label="Zoom out">-</button>
+              <button className="zbtn" onClick={() => zoomBy(1.25)} aria-label="Zoom in">+</button>
+              <button className="zbtn reset" onClick={reset} aria-label="Reset">↺</button>
+            </div>
+            <div className="explore-hint" style={{ opacity: hint ? 1 : 0 }}>Drag · Zoom · Tap markers</div>
           </div>
 
-          <div className={`explore-readout ${readout ? 'show' : ''}`}>
+          <div className={`explore-readout mobile-readout ${readout ? 'show' : ''}`}>
             <div className="k">{readout?.k || 'Tap a marker'}</div>
             <h4>{readout?.title || 'Nine wounds to examine'}</h4>
             <p>{readout?.desc || 'Each marker zooms into a specific wound or mark on the cloth and explains what it is, what caused it, and why researchers consider it significant.'}</p>
           </div>
-
-          <div className="explore-controls">
-            <button className="zbtn" onClick={() => zoomBy(0.8)} aria-label="Zoom out">-</button>
-            <button className="zbtn" onClick={() => zoomBy(1.25)} aria-label="Zoom in">+</button>
-            <button className="zbtn reset" onClick={reset} aria-label="Reset">↺</button>
-          </div>
-          <div className="explore-hint" style={{ opacity: hint ? 1 : 0 }}>Drag · Zoom · Tap markers</div>
         </div>
       </div>
     </section>
@@ -605,7 +612,7 @@ function Gallery() {
 
 function Talks() {
   const cards = [
-    ['https://img.youtube.com/vi/AhiiA-HskfI/maxresdefault.jpg', "Behold the Man: An introduction to the Shroud of Turin by Mike Morcos", 'Parish talk · 48 min', 'https://www.youtube.com/live/AhiiA-HskfI?si=CZUlq1zq0WMWVI1k'],
+    ['https://img.youtube.com/vi/AhiiA-HskfI/maxresdefault.jpg', "Behold the Man: An introduction to the Shroud of Turin by Mike Morcous", 'Parish talk · 48 min', 'https://www.youtube.com/live/AhiiA-HskfI?si=CZUlq1zq0WMWVI1k'],
     ['g-group.png', 'History, blood & the carbon-dating debate', 'Evening lecture · 55 min', 'https://www.youtube.com'],
     ['g-talk.png', 'Standing before the replica: a Q&A', 'Community night · 40 min', 'https://www.youtube.com'],
   ];
@@ -693,7 +700,7 @@ function Contact() {
 function Footer() {
   return (
     <footer className="foot">
-      <span className="brand">Mike Morcos</span>
+      <span className="brand">Mike Morcous</span>
       <small>The Shroud of Turin · Talks across the GTA &amp; Niagara</small>
     </footer>
   );
