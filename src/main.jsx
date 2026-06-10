@@ -393,7 +393,7 @@ const hotspots = [
   ['47', '45', '4.2', 'Crown of Thorns', 'A helmet of thorns','Unlike the ring-crown of traditional artwork, puncture wounds cover the entire scalp — consistent with a cap or helmet of thorns. Researchers count at least 30 puncture sites. A rivulet of blood on the forehead forms a reversed "3" shape'],
   // Dorsal (back) image — head at center-right (~x=53%), feet far right (~x=90%)
   ['62', '47', '3.2', 'Scourge Marks',   'Over 100 flagrum wounds across the back',   'Dumbbell-shaped marks cover the back, shoulders, and legs — researchers count more than 100 individual impacts. Each is consistent with a Roman flagrum: a whip with leather thongs tipped with lead balls or calcified sheep knuckle-bones. The marks appear at two distinct angles, indicating two soldiers, one on each side, took turns flogging.'],
-  ['65', '44', '3.2', 'Blood from Side Wound', 'Blood that drained from the lance wound in the side. ', 'When the body was carried flat to the tomb, the pooled blood ran sideways across the lower back, leaving the wide transverse stain known as the "blood belt."'],
+  ['65', '44', '3.2', 'Blood from Side Wound', 'Blood that drained from the lance wound in the side. ', 'When the body was carried sideways to the tomb, the pooled blood ran sideways across the lower back, leaving the wide transverse stain known as the "blood belt."'],
   ['75', '18', '3.2', 'Poker Holes', 'Sets of small burn holes in an L-shaped pattern.', 'They predate the 1532 fire. One theory holds they were made accidentally during a liturgy, by burning incense falling on the cloth. The same L-shaped marks appear on the Pray Codex, a Hungarian manuscript dated to around 1192-1195, which is one of the arguments against the medieval radiocarbon date.'],
   ['92', '45', '3.2', 'Both Feet', 'Bloody footprints on the dorsal image.', 'The right foot was placed over the left and a single nail driven through both, so the right leaves a fuller print while the left is partial. Blood from the nail wound pooled at the soles and transferred where the feet pressed flat against the linen. The positioning matches a body hanging and shifting on a cross rather than one artistically arranged.']
 ];
@@ -612,9 +612,7 @@ function Gallery() {
 function Talks() {
   const cards = [
     ['https://img.youtube.com/vi/AhiiA-HskfI/maxresdefault.jpg', "Behold the Man: An introduction to the Shroud of Turin by Mike Morcous", 'Parish talk · 48 min', 'https://www.youtube.com/live/AhiiA-HskfI?si=CZUlq1zq0WMWVI1k'],
-    ['g-group.png', 'History, blood & the carbon-dating debate', 'Evening lecture · 55 min', 'https://www.youtube.com'],
-    ['g-talk.png', 'Standing before the replica: a Q&A', 'Community night · 40 min', 'https://www.youtube.com'],
-  ];
+   ];
 
   return (
     <section className="video section-pad" id="talks">
