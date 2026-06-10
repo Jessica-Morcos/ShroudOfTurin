@@ -88,7 +88,7 @@ function Nav() {
     ['About', '#about'],
     ['The Shroud', '#shroud'],
     ['Talks', '#talks'],
-    ['Invite', '#invite'],
+  
   ];
 
   return (
@@ -365,7 +365,7 @@ function FaceReveal() {
   }, []);
 
   return (
-    <section className="reveal-sec" id="face">
+    <section className="reveal-sec" id="shroud">
       <div className="reveal-stage" ref={stageRef}>
         <div className="reveal-sticky">
           <div className="reveal-frame">
@@ -389,7 +389,7 @@ const hotspots = [
   ['28', '50', '4.0', 'Wrist Wound',     'Nail wound at the wrist, not the palm',     'The nail wound appears in the wrist at the "Space of Destot," not the palm as in traditional iconography. Surgeon Dr. Pierre Barbet showed that nails through the palm tear out under body weight; only the carpal bones of the wrist can bear it. Piercing the median nerve here causes the thumb to involuntarily fold inward — which is why no thumbs are visible on the image.'],
   ['30', '57', '4.0', 'Arm Blood Stains', 'Rivulets running from the wrist wounds down both forearms. ','Two flow angles suggest the arms shifted between positions during crucifixion.'],
   ['35', '55', '3.8', 'Side Wound',      'The lance wound between the ribs',          'A large oval blood stain is visible on the right side of the chest between the 5th and 6th ribs. The Gospel of John (19:34) records that "blood and water" flowed from this wound. Medical researchers associate the separation of fluids with post-mortem serum separation, indicating the lance was thrust after death. The stain measures approximately 4.4 × 1.1 cm.'],
-  ['43', '40', '4.2', 'Facial Wounds',   'Bruising, swelling, and blows to the face', 'The face shows a swollen right cheek, nasal deviation consistent with a severe blow or fracture, and multiple abrasions. These match the Gospel accounts of guards striking Jesus during his trial'],
+  ['43', '40', '4.2', 'Facial Wounds',   'Bruising, swelling, and blows to the face', 'The face shows a swollen right cheek, nasal swelling consistent with a severe blow, and plucked beard. These match the Gospel accounts of guards striking Jesus during his trial'],
   ['47', '45', '4.2', 'Crown of Thorns', 'A helmet of thorns','Unlike the ring-crown of traditional artwork, puncture wounds cover the entire scalp — consistent with a cap or helmet of thorns. Researchers count at least 30 puncture sites. A rivulet of blood on the forehead forms a reversed "3" shape'],
   // Dorsal (back) image — head at center-right (~x=53%), feet far right (~x=90%)
   ['62', '47', '3.2', 'Scourge Marks',   'Over 100 flagrum wounds across the back',   'Dumbbell-shaped marks cover the back, shoulders, and legs — researchers count more than 100 individual impacts. Each is consistent with a Roman flagrum: a whip with leather thongs tipped with lead balls or calcified sheep knuckle-bones. The marks appear at two distinct angles, indicating two soldiers, one on each side, took turns flogging.'],
@@ -622,7 +622,7 @@ function Talks() {
             <div className="eyebrow" data-reveal>Watch</div>
             <h2 className="display" data-reveal>Mike&apos;s past talks</h2>
           </div>
-          <a className="btn ghost" href="https://www.youtube.com" target="_blank" rel="noreferrer" data-reveal>On YouTube <span className="arr">→</span></a>
+          <a className="btn ghost" href="https://www.youtube.com/@BeholdTheMan-2026" target="_blank" rel="noreferrer" data-reveal>On YouTube <span className="arr">→</span></a>
         </div>
         <div className="video-grid">
           {cards.map(([thumb, title, label, url], i) => (
@@ -686,7 +686,7 @@ function Contact() {
             <h4>Email</h4>
             <a className="big" href="mailto:m_morcous@yahoo.ca">m_morcous@yahoo.ca</a>
             <h4>Follow</h4>
-            <a className="social-link" href="https://www.youtube.com" target="_blank" rel="noreferrer">▶ YouTube</a>
+            <a className="social-link" href="https://www.youtube.com/@BeholdTheMan-2026m" target="_blank" rel="noreferrer">▶ YouTube</a>
           </aside>
         </div>
       </div>
@@ -716,7 +716,7 @@ function App() {
         <Explorer />
         <Talks />
         <Gallery />
-        <Invite />
+       
         <Contact />
       </main>
       <Footer />
