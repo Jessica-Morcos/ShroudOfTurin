@@ -586,11 +586,11 @@ function Explorer() {
 
 function Gallery() {
   const items = [
-    ['g-pointing.png', 'g1'],
-    ['g-church.png', 'g2'],
+    ['gallary1.JPG', 'g1'],
+    ['g-pointing.jpeg', 'g2'],
     ['g-group.png', 'g3'],
-    ['g-talk.png', 'g4'],
-    ['g-convo.png', 'g5'],
+    ['g-talk.JPG', 'g4'],
+    ['g-3.JPG', 'g5'],
     ['g-room.png', 'g6'],
   ];
 
