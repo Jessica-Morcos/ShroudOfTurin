@@ -611,8 +611,9 @@ function Gallery() {
 
 function Talks() {
   const cards = [
-    ['https://img.youtube.com/vi/AhiiA-HskfI/maxresdefault.jpg', "Behold the Man: An introduction to the Shroud of Turin by Mike Morcous", 'Parish talk · 48 min', 'https://www.youtube.com/live/AhiiA-HskfI?si=CZUlq1zq0WMWVI1k'],
-   ];
+    ['https://img.youtube.com/vi/AhiiA-HskfI/maxresdefault.jpg', "Behold the Man: An introduction to the Shroud of Turin by Mike Morcous", 'Parish talk · 2 hours 1 min', 'https://www.youtube.com/live/AhiiA-HskfI?si=CZUlq1zq0WMWVI1k'],
+    ['https://img.youtube.com/vi/R1brEwG-g-c/maxresdefault.jpg', "St. Mark Coptic Orthodox Church - Markham June 10 2026", 'Parish talk · 1 hour 30 min', 'https://youtu.be/R1brEwG-g-c?si=fq8VipQh1vfnmPCK'],
+  ];
 
   return (
     <section className="video section-pad" id="talks">
