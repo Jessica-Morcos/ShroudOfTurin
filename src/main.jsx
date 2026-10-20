@@ -86,6 +86,7 @@ function Nav() {
 
   const links = [
     ['About', '#about'],
+    ['Events', '#events'],
     ['The Shroud', '#shroud'],
     ['Talks', '#talks'],
   
@@ -300,6 +301,239 @@ function About() {
               <div className="stat"><div className="n">GTA</div><div className="l">&amp; Niagara<br />region talks</div></div>
             </div>
             <a className="btn" href="#contact" data-reveal style={{ marginTop: '2rem', display: 'inline-flex' }}>Get in touch <span className="arr">→</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Public Google Calendar: set these in a .env file (see .env.example).
+const GCAL_ID = import.meta.env.VITE_GCAL_ID;
+const GCAL_API_KEY = import.meta.env.VITE_GCAL_API_KEY;
+const EVENT_LIMIT = 3;
+const EVENT_TZ = 'America/Toronto';
+
+function useUpcomingEvents() {
+  const [state, setState] = useState({ status: 'loading', events: [] });
+
+  useEffect(() => {
+    if (!GCAL_ID || !GCAL_API_KEY) {
+      // In local dev, show sample events so the layout can be previewed before the calendar is set up.
+      if (import.meta.env.DEV) {
+        const inDays = (n, h) => {
+          const d = new Date();
+          d.setDate(d.getDate() + n);
+          d.setHours(h, 0, 0, 0);
+          return d;
+        };
+        const sample = (id, title, location, days, hour) => {
+          const allDay = hour == null;
+          const start = inDays(days, allDay ? 0 : hour);
+          const end = allDay ? inDays(days + 1, 0) : inDays(days, hour + 2);
+          return { id, title, location, description: '', allDay, start, end, timeZone: EVENT_TZ };
+        };
+        setState({
+          status: 'ready',
+          events: [
+            sample('s1', 'The Man of the Shroud', "St. Michael's Parish · Toronto", 6, 19),
+            sample('s2', 'Science & the Shroud', 'Community Hall · Niagara Falls', 17, 18),
+            sample('s3', 'Advent evening with the replica', 'Holy Cross Church · Hamilton', 30),
+          ],
+        });
+        return;
+      }
+      setState({ status: 'empty', events: [] });
+      return;
+    }
+
+    const ctrl = new AbortController();
+    const params = new URLSearchParams({
+      key: GCAL_API_KEY,
+      timeMin: new Date().toISOString(),
+      singleEvents: 'true',
+      orderBy: 'startTime',
+      maxResults: String(EVENT_LIMIT),
+    });
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(GCAL_ID)}/events?${params}`;
+
+    fetch(url, { signal: ctrl.signal })
+      .then((r) => (r.ok
+        ? r.json()
+        : r.json().then((body) => Promise.reject(new Error(`Calendar ${r.status}: ${body.error?.message || ''}`)))))
+      .then((data) => {
+        const events = (data.items || []).map((ev) => ({
+          id: ev.id,
+          title: ev.summary || 'Talk',
+          location: ev.location || '',
+          description: ev.description || '',
+          allDay: !ev.start.dateTime,
+          start: new Date(ev.start.dateTime || `${ev.start.date}T00:00:00`),
+          end: new Date(ev.end.dateTime || `${ev.end.date}T00:00:00`),
+          timeZone: ev.start.timeZone || data.timeZone || EVENT_TZ,
+        }));
+        setState({ status: events.length ? 'ready' : 'empty', events });
+      })
+      .catch((err) => {
+        if (err.name === 'AbortError') return;
+        console.warn('Could not load upcoming events:', err.message);
+        setState({ status: 'error', events: [] });
+      });
+
+    return () => ctrl.abort();
+  }, []);
+
+  return state;
+}
+
+// "Venue, 123 Street, City, ON A1B 2C3, Canada" -> "Venue · City"; shorter strings are shown as-is.
+const shortLocation = (loc) => {
+  const parts = loc.split(',').map((p) => p.trim()).filter(Boolean);
+  return parts.length >= 4 ? `${parts[0]} · ${parts[parts.length - 3]}` : loc;
+};
+
+// Calendar date formats: all-day events use local YYYYMMDD, timed events use UTC YYYYMMDDTHHMMSSZ.
+const calDate = (d, allDay) => {
+  if (allDay) {
+    return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+  }
+  return d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+};
+
+// Wall-clock time in the event's own time zone (YYYYMMDDTHHMMSS), paired with Google's ctz param so the
+// event is added at the right local time no matter what time zone the visitor's account is set to.
+const wallTime = (d, timeZone) => {
+  const p = Object.fromEntries(
+    new Intl.DateTimeFormat('en-CA', {
+      timeZone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23',
+    }).formatToParts(d).map(({ type, value }) => [type, value]),
+  );
+  return `${p.year}${p.month}${p.day}T${p.hour}${p.minute}${p.second}`;
+};
+
+const eventDetails = (ev) => [ev.description, `More about Mike's talks: ${window.location.origin}`].filter(Boolean).join('\n\n');
+
+const googleCalendarUrl = (ev) => {
+  const dates = ev.allDay
+    ? `${calDate(ev.start, true)}/${calDate(ev.end, true)}`
+    : `${wallTime(ev.start, ev.timeZone)}/${wallTime(ev.end, ev.timeZone)}`;
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: ev.title,
+    dates,
+    details: eventDetails(ev),
+    location: ev.location,
+  });
+  if (!ev.allDay) params.set('ctz', ev.timeZone);
+  return `https://calendar.google.com/calendar/render?${params}`;
+};
+
+const downloadIcs = (ev) => {
+  const esc = (v) => v.replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/([,;])/g, '\\$1');
+  const dateLine = (key, d) => (ev.allDay ? `${key};VALUE=DATE:${calDate(d, true)}` : `${key}:${calDate(d, false)}`);
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Mike Morcous//Shroud Talks//EN',
+    'BEGIN:VEVENT',
+    `UID:${ev.id}@shroud-talks`,
+    `DTSTAMP:${calDate(new Date(), false)}`,
+    dateLine('DTSTART', ev.start),
+    dateLine('DTEND', ev.end),
+    `SUMMARY:${esc(ev.title)}`,
+    `LOCATION:${esc(ev.location)}`,
+    `DESCRIPTION:${esc(eventDetails(ev))}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n');
+
+  const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${ev.title.replace(/[^\w]+/g, '-').toLowerCase()}.ics`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+function AddToCalendar({ ev }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const close = (e) => {
+      if (e.type === 'keydown' ? e.key === 'Escape' : !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener('pointerdown', close);
+    document.addEventListener('keydown', close);
+    return () => {
+      document.removeEventListener('pointerdown', close);
+      document.removeEventListener('keydown', close);
+    };
+  }, [open]);
+
+  return (
+    <div className="add-cal" ref={ref}>
+      <button className="event-cta" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+        Add to calendar <span className="arr">+</span>
+      </button>
+      {open && (
+        <div className="add-cal-menu">
+          <a href={googleCalendarUrl(ev)} target="_blank" rel="noreferrer" onClick={() => setOpen(false)}>Google Calendar</a>
+          <button onClick={() => { downloadIcs(ev); setOpen(false); }}>Apple / Outlook (.ics)</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Events() {
+  const { status, events } = useUpcomingEvents();
+
+  return (
+    <section className="events" id="events">
+      <div className="wrap">
+        <div className="events-grid">
+          <div className="events-head" data-reveal>
+            <div className="eyebrow">Upcoming</div>
+            <h2 className="display">Where to see<br />the Shroud next</h2>
+          </div>
+
+          <div>
+            {status === 'loading' && <p className="events-note muted">Loading upcoming talks…</p>}
+
+            {(status === 'empty' || status === 'error') && (
+              <p className="events-note muted">
+                No public talks are scheduled right now. <a href="#contact">Invite Mike to your parish</a> to be the next one.
+              </p>
+            )}
+
+            {status === 'ready' && (
+              <ul className="events-list">
+                {events.map((ev) => (
+                  <li key={ev.id}>
+                    <div className="event-row">
+                      <div className="event-date">
+                        <span className="m">{ev.start.toLocaleDateString(undefined, { month: 'short' })}</span>
+                        <span className="d">{String(ev.start.getDate()).padStart(2, '0')}</span>
+                      </div>
+                      <div className="event-meta">
+                        <h4>{ev.title}</h4>
+                        <div className="l">
+                          {[
+                            shortLocation(ev.location),
+                            ev.allDay
+                              ? ev.start.toLocaleDateString(undefined, { weekday: 'long' })
+                              : ev.start.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }),
+                          ].filter(Boolean).join(' · ')}
+                        </div>
+                      </div>
+                      <AddToCalendar ev={ev} />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </div>
@@ -714,6 +948,7 @@ function App() {
       <main>
         <Hero />
         <About />
+        <Events />
         <FaceReveal />
         <Explorer />
         <Talks />

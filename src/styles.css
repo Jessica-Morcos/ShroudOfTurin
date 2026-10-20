@@ -917,6 +917,176 @@ h3 {
   margin-top: 6px;
 }
 
+.events {
+  background: var(--bg-3);
+  padding-block: clamp(48px, 6vw, 80px);
+  border-block: 1px solid var(--line-soft);
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr);
+  gap: clamp(32px, 6vw, 96px);
+  align-items: start;
+}
+
+.events-head h2 {
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  line-height: 1.12;
+  margin-top: 14px;
+}
+
+.events-note {
+  margin: 0;
+}
+
+.events-note a {
+  color: var(--ochre);
+  border-bottom: 1px solid currentColor;
+}
+
+.events-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+
+.events-list li {
+  border-bottom: 1px solid var(--line);
+}
+
+.event-row {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: center;
+  padding: 16px 18px;
+  transition: background 0.4s;
+}
+
+.event-row:hover {
+  background: color-mix(in oklab, var(--ink) 4%, transparent);
+}
+
+.event-date {
+  text-align: center;
+}
+
+.event-date .m {
+  display: block;
+  font-size: 0.66rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ochre);
+}
+
+.event-date .d {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  line-height: 1.05;
+}
+
+.event-meta h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.event-meta .l {
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-top: 4px;
+}
+
+.add-cal {
+  position: relative;
+}
+
+.event-cta {
+  background: none;
+  border: 0;
+  padding: 6px 0;
+  cursor: pointer;
+  font-size: 0.66rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ochre);
+  white-space: nowrap;
+}
+
+.event-cta .arr {
+  display: inline-block;
+  margin-left: 8px;
+  transition: transform 0.4s;
+}
+
+.event-cta:hover .arr,
+.event-cta[aria-expanded="true"] .arr {
+  transform: rotate(45deg);
+}
+
+.add-cal-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 5;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.8);
+}
+
+.add-cal-menu a,
+.add-cal-menu button {
+  background: none;
+  border: 0;
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  color: var(--ink);
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.add-cal-menu a:hover,
+.add-cal-menu button:hover {
+  background: color-mix(in oklab, var(--ink) 7%, transparent);
+}
+
+@media (max-width: 920px) {
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .event-row {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 16px;
+    padding: 14px 4px;
+  }
+
+  .add-cal {
+    grid-column: 2;
+    margin-top: -8px;
+  }
+
+  .add-cal-menu {
+    left: 0;
+    right: auto;
+  }
+}
+
 .invite {
   background: var(--bg-3);
   overflow: hidden;
