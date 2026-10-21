@@ -308,61 +308,46 @@ function About() {
   );
 }
 
-// Public Google Calendar: set these in a .env file (see .env.example).
-const GCAL_ID = import.meta.env.VITE_GCAL_ID;
-const GCAL_API_KEY = import.meta.env.VITE_GCAL_API_KEY;
-const EVENT_LIMIT = 3;
+// Upcoming talks come from /api/events (api/events.js), which reads the public Google Calendar
+// server-side so the API key never reaches the browser.
 const EVENT_TZ = 'America/Toronto';
+
+// In local dev without a calendar configured, show sample events so the layout can still be previewed.
+function sampleEvents() {
+  const inDays = (n, h) => {
+    const d = new Date();
+    d.setDate(d.getDate() + n);
+    d.setHours(h, 0, 0, 0);
+    return d;
+  };
+  const sample = (id, title, location, days, hour) => {
+    const allDay = hour == null;
+    const start = inDays(days, allDay ? 0 : hour);
+    const end = allDay ? inDays(days + 1, 0) : inDays(days, hour + 2);
+    return { id, title, location, description: '', allDay, start, end, timeZone: EVENT_TZ };
+  };
+  return [
+    sample('s1', 'The Man of the Shroud', "St. Michael's Parish · Toronto", 6, 19),
+    sample('s2', 'Science & the Shroud', 'Community Hall · Niagara Falls', 17, 18),
+    sample('s3', 'Advent evening with the replica', 'Holy Cross Church · Hamilton', 30),
+  ];
+}
 
 function useUpcomingEvents() {
   const [state, setState] = useState({ status: 'loading', events: [] });
 
   useEffect(() => {
-    if (!GCAL_ID || !GCAL_API_KEY) {
-      // In local dev, show sample events so the layout can be previewed before the calendar is set up.
-      if (import.meta.env.DEV) {
-        const inDays = (n, h) => {
-          const d = new Date();
-          d.setDate(d.getDate() + n);
-          d.setHours(h, 0, 0, 0);
-          return d;
-        };
-        const sample = (id, title, location, days, hour) => {
-          const allDay = hour == null;
-          const start = inDays(days, allDay ? 0 : hour);
-          const end = allDay ? inDays(days + 1, 0) : inDays(days, hour + 2);
-          return { id, title, location, description: '', allDay, start, end, timeZone: EVENT_TZ };
-        };
-        setState({
-          status: 'ready',
-          events: [
-            sample('s1', 'The Man of the Shroud', "St. Michael's Parish · Toronto", 6, 19),
-            sample('s2', 'Science & the Shroud', 'Community Hall · Niagara Falls', 17, 18),
-            sample('s3', 'Advent evening with the replica', 'Holy Cross Church · Hamilton', 30),
-          ],
-        });
-        return;
-      }
-      setState({ status: 'empty', events: [] });
-      return;
-    }
-
     const ctrl = new AbortController();
-    const params = new URLSearchParams({
-      key: GCAL_API_KEY,
-      timeMin: new Date().toISOString(),
-      singleEvents: 'true',
-      orderBy: 'startTime',
-      maxResults: String(EVENT_LIMIT),
-    });
-    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(GCAL_ID)}/events?${params}`;
 
-    fetch(url, { signal: ctrl.signal })
-      .then((r) => (r.ok
-        ? r.json()
-        : r.json().then((body) => Promise.reject(new Error(`Calendar ${r.status}: ${body.error?.message || ''}`)))))
+    fetch('/api/events', { signal: ctrl.signal })
+      .then((r) => r.json().then((body) => {
+        if (r.ok) return body;
+        const err = new Error(`Events ${r.status}: ${body.error || ''}`);
+        err.notConfigured = r.status === 501;
+        throw err;
+      }))
       .then((data) => {
-        const events = (data.items || []).map((ev) => ({
+        const events = data.events.map((ev) => ({
           id: ev.id,
           title: ev.summary || 'Talk',
           location: ev.location || '',
@@ -376,6 +361,10 @@ function useUpcomingEvents() {
       })
       .catch((err) => {
         if (err.name === 'AbortError') return;
+        if (err.notConfigured && import.meta.env.DEV) {
+          setState({ status: 'ready', events: sampleEvents() });
+          return;
+        }
         console.warn('Could not load upcoming events:', err.message);
         setState({ status: 'error', events: [] });
       });
